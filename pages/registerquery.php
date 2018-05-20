@@ -40,7 +40,7 @@ if($_POST) {
                                  '$user_email', 
                                  '$username', 
                                  '$password', 
-                                 './img/$username/,
+                                 './img/$username/',
                                  '$usertype', 
                                  'pending', 
                                  0)";

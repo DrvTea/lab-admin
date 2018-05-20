@@ -66,12 +66,16 @@
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="image">
-          <img src="../Admin/dist/img/male.png" class="img-circle elevation-2" alt="User Image">
-        </div>
-        <div class="info">
-          <a href="#" class="d-block">Mitch Galatcha</a>
-        </div>
+				<?php 
+					$result = $mysqli->query('SELECT user_id, gender, CONCAT(given_name, " ", last_name) as "name" FROM users where username="'.$_SESSION['username'].'"');
+					$row = mysqli_fetch_array($result);
+					echo '<div class="image">
+									<img src="./dist/img/'.$row['gender'].'.png" class="img-circle elevation-2" alt="User Image">
+								</div>
+								<div class="info">
+									<a href="#" class="d-block">'.$row['name'].'</a>
+								</div>';
+				?>
       </div>
 
       <!-- Sidebar Menu -->
@@ -156,7 +160,7 @@
               <div class="inner">
                 <h3>
 									<?php 
-										$result = $mysqli->query('SELECT * FROM users where user_type="provider"');
+										$result = $mysqli->query('SELECT * FROM users where user_type="provider" && account_status="accepted"');
 										$numRows = mysqli_num_rows($result);
 										echo $numRows;
 									?>
@@ -196,7 +200,7 @@
               <div class="inner">
                 <h3>
 									<?php 
-										$result = $mysqli->query('SELECT * FROM users where user_type="user"');
+										$result = $mysqli->query('SELECT * FROM users where user_type="user" && account_status="accepted"');
 										$numRows = mysqli_num_rows($result);
 										echo $numRows;
 									?>

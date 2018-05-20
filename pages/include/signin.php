@@ -15,7 +15,7 @@
         } else if ($data['account_status'] == 'deactivated') {
             echo "<script>alert('Your Account has been deactivated, please contact the Admin!')</script>";
         } else if ($data['user_type'] == 'admin') {
-            $_SESSION['user_id'] = $username;
+            $_SESSION['username'] = $username;
             $_SESSION['user_type'] = $data['user_type'];
             $_SESSION['account_status'] = $data['account_status'];	
             $_SESSION['logged_in'] = true;

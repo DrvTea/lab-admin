@@ -44,7 +44,7 @@
                   <input type="submit" class="btn btn-g btn-secondary btn-lg w-100 text-center p-1 m-0" name="submit">
               </form>
 								<div class="fading-line"></div>
-								<p class="text-dark text-center">New? <a href="pages/reg" id="register-link">Register a new account</a></p>
+								<p class="text-dark text-center">New? <a href="./pages/register.php" id="register-link">Register a new account</a></p>
             </div>
           </div>
           <div class="col-md-12 mt-3 text-center">
