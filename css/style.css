@@ -1,0 +1,21 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+.fading-line { 
+	margin: 25px 0;
+	height: 1px;
+	background: black;
+	background: -webkit-gradient(linear, 0 0, 100% 0, from(white), to(white), color-stop(50%, black));
+}
+
+#register-link {
+	text-decoration: none;
+	color: #007bff;
+}
+
+#register-link:hover {
+	text-decoration: underline;
+	color: #ff0000;
+}
