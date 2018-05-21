@@ -51,10 +51,24 @@
         <a href="../index.php" class="nav-link">Home</a>
       </li>
     </ul>
-		<!-- Right navbar links -->
+
+    <!-- SEARCH FORM -->
+    <form class="form-inline ml-3">
+      <div class="input-group input-group-sm">
+        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+        <div class="input-group-append">
+          <button class="btn btn-navbar" type="submit">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Messages Dropdown Menu -->
-            <li class="nav-item">
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item">
         <a class="nav-link" href="../logout.php">Logout</a>
       </li>
     </ul>
@@ -67,18 +81,24 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <?php 
-					$result = $mysqli->query('SELECT user_id, gender, CONCAT(given_name, " ", last_name) as "name" FROM users where username="'.$_SESSION['username'].'"');
-					$row = mysqli_fetch_array($result);
-					echo '<div class="image">
-									<img src="../dist/img/'.$row['gender'].'.png" class="img-edit" alt="User Image">
-								</div>
-								<div class="info">
-									<a href="#" class="d-block">'.$row['name'].'</a>
-								</div>';
-				?>
-      </div>
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <?php
+                if(isset($_SESSION['display_picture'])){
+                    echo "<img class=\"img-circle elevation-2\" src=\"".$_SESSION['display_picture']."\" alt=\"User Image\">";
+                } else {
+                    if($_SESSION['gender'] == "male"){
+                        echo "<img class=\"img-circle elevation-2\" src=\"../dist/img/male.png\" alt=\"User Image\">";
+                    }else if($_SESSION['gender'] == "female"){
+                        echo "<img class=\"img-circle elevation-2\" src=\"../dist/img/female.png\" alt=\"User Image\">";
+                    }
+                }
+                ?>
+            </div>
+            <div class="info">
+                <a href="#" class="d-block"><?php echo $_SESSION['fname'].' '.$_SESSION['lname'];?></a>
+            </div>
+        </div>
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
@@ -164,13 +184,14 @@
         <table>
           <tr>
             <th>House name</th>
-						<th>Owner</th>
+			<th>Owner</th>
             <th>Customer Name</th>
             <th>Rental Start</th>
             <th>Current Charge</th>
+            <th>Fee to Charge to Provider</th>
           </tr>
           <?php
-					$result = $mysqli->query("SELECT rental.rental_startdate,(reservation.reservation_fee + rental.rental_fee) as 'current charge', house.house_name, (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = house.user_id) as 'owner', (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = reservation.user_id) as 'customer' FROM reservation  JOIN rental ON reservation.reservation_id = rental.reservation_id  JOIN house ON reservation.house_id = house.house_id JOIN users ON reservation.user_id = users.user_id") or die ($mysqli->error());
+					$result = $mysqli->query("SELECT rental.rental_startdate,(reservation.reservation_fee + rental.rental_fee) as 'current charge', rental.fee_to_provider, house.house_name, (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = house.user_id) as 'owner', (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = reservation.user_id) as 'customer' FROM reservation JOIN rental ON reservation.reservation_id = rental.reservation_id JOIN house ON reservation.house_id = house.house_id JOIN users ON reservation.user_id = users.user_id WHERE rental_status ='ongoing'") or die ($mysqli->error());
 					while($row = mysqli_fetch_array($result)) {
 						echo '<tr>
             <td>'.$row['house_name'].'</td>
@@ -178,6 +199,7 @@
             <td>'.$row['customer'].'</td>
             <td>'.$row['rental_startdate'].'</td>
             <td>'.$row['current charge'].'</td>
+            <td>'.$row['fee_to_provider'].'</td>
           </tr>';
 					}
 					?>
