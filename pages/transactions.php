@@ -187,18 +187,16 @@
 			<th>Owner</th>
             <th>Customer Name</th>
             <th>Rental Start</th>
-            <th>Current Charge</th>
             <th>Fee to Charge to Provider</th>
           </tr>
           <?php
-					$result = $mysqli->query("SELECT rental.rental_startdate,(reservation.reservation_fee + rental.rental_fee) as 'current charge', rental.fee_to_provider, house.house_name, (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = house.user_id) as 'owner', (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = reservation.user_id) as 'customer' FROM reservation JOIN rental ON reservation.reservation_id = rental.reservation_id JOIN house ON reservation.house_id = house.house_id JOIN users ON reservation.user_id = users.user_id WHERE rental_status ='ongoing'") or die ($mysqli->error());
+					$result = $mysqli->query("SELECT rental.rental_startdate, rental.fee_to_provider, house.house_name, (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = house.user_id) as 'owner', (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = reservation.user_id) as 'customer' FROM reservation JOIN rental ON reservation.reservation_id = rental.reservation_id JOIN house ON reservation.house_id = house.house_id JOIN users ON reservation.user_id = users.user_id WHERE rental_status ='ongoing'") or die ($mysqli->error());
 					while($row = mysqli_fetch_array($result)) {
 						echo '<tr>
             <td>'.$row['house_name'].'</td>
             <td>'.$row['owner'].'</td>
             <td>'.$row['customer'].'</td>
             <td>'.$row['rental_startdate'].'</td>
-            <td>'.$row['current charge'].'</td>
             <td>'.$row['fee_to_provider'].'</td>
           </tr>';
 					}
