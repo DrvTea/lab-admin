@@ -28,7 +28,6 @@ if($_POST) {
                                   email_address,
                                   username,
                                   password,
-                                  display_picture,
                                   user_type,
                                   account_status,
                                   account_balance) " . "VALUES 
@@ -40,7 +39,6 @@ if($_POST) {
                                  '$user_email', 
                                  '$username', 
                                  '$password', 
-                                 './img/$username/',
                                  '$usertype', 
                                  'pending', 
                                  0)";
