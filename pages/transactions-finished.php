@@ -53,16 +53,19 @@
     </ul>
 
     <!-- SEARCH FORM -->
-    <form class="form-inline ml-3">
-      <div class="input-group input-group-sm">
-        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-        <div class="input-group-append">
-          <button class="btn btn-navbar" type="submit">
-            <i class="fa fa-search"></i>
-          </button>
-        </div>
-      </div>
-    </form>
+      <form class="form-inline ml-3" action="transactions-finished.php" method="get">
+          <div class="input-group input-group-sm">
+              <input class="form-control form-control-navbar" type="date" name="date" aria-label="date">
+          </div>
+          <div class="input-group input-group-sm">
+              <input class="form-control form-control-navbar" type="search" name="search" placeholder="Search" aria-label="Search">
+              <div class="input-group-append">
+                  <button class="btn btn-navbar" type="submit">
+                      <i class="fa fa-search"></i>
+                  </button>
+              </div>
+          </div>
+      </form>
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
@@ -82,22 +85,16 @@
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-                <?php
-                if(isset($_SESSION['display_picture'])){
-                    echo "<img class=\"img-circle elevation-2\" src=\"".$_SESSION['display_picture']."\" alt=\"User Image\">";
-                } else {
-                    if($_SESSION['gender'] == "male"){
-                        echo "<img class=\"img-circle elevation-2\" src=\"../dist/img/male.png\" alt=\"User Image\">";
-                    }else if($_SESSION['gender'] == "female"){
-                        echo "<img class=\"img-circle elevation-2\" src=\"../dist/img/female.png\" alt=\"User Image\">";
-                    }
-                }
-                ?>
-            </div>
-            <div class="info">
-                <a href="#" class="d-block"><?php echo $_SESSION['fname'].' '.$_SESSION['lname'];?></a>
-            </div>
+            <?php
+            $result = $mysqli->query('SELECT user_id, gender, CONCAT(given_name, " ", last_name) as "name" FROM users where username="'.$_SESSION['username'].'"');
+            $row = mysqli_fetch_array($result);
+            echo '<div class="image">
+									<img src="../dist/img/'.$row['gender'].'.png" class="img-edit" alt="User Image">
+								</div>
+								<div class="info">
+									<a href="#" class="d-block">'.$row['name'].'</a>
+								</div>';
+            ?>
         </div>
 
       <!-- Sidebar Menu -->
@@ -191,7 +188,87 @@
             <th>Fee to Charge to Provider</th>
           </tr>
 					<?php
-					$result = $mysqli->query("SELECT rental.rental_startdate,rental.rental_enddate, rental.fee_to_provider, house.house_name, (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = house.user_id) as 'owner', (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = reservation.user_id) as 'customer' FROM reservation JOIN rental ON reservation.reservation_id = rental.reservation_id JOIN house ON reservation.house_id = house.house_id JOIN users ON reservation.user_id = users.user_id WHERE rental_status = 'completed'") or die ($mysqli->error());
+                    if(!empty($_GET['date'])&&!empty($_GET['search'])){
+                        $getdate = date_create($mysqli->escape_string($_GET['date']));
+                        $date = date_format($getdate,"Y-m-d");
+                        $string = $mysqli->escape_string($_GET['search']);
+                        $search = "'%".$string."%'";
+                        $result = $mysqli->query("SELECT 
+                                      rental.rental_startdate, 
+                                      rental.rental_enddate,
+                                      rental.fee_to_provider, 
+                                      house.house_name, 
+                                      (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = house.user_id) as 'owner', 
+                                      (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = reservation.user_id) as 'customer' 
+                                      FROM reservation 
+                                      JOIN rental 
+                                      ON reservation.reservation_id = rental.reservation_id 
+                                      JOIN house 
+                                      ON reservation.house_id = house.house_id 
+                                      JOIN customers 
+                                      ON reservation.user_id = customers.user_id 
+                                      JOIN owners
+                                      ON house.user_id = owners.user_id
+                                      WHERE (owner LIKE $search OR customer LIKE $search OR house_name LIKE $search) 
+                                      AND rental_startdate = '$date' 
+                                      AND rental_status ='completed'") or die ($mysqli->error());
+                    } else if(!empty($_GET['date'])){
+                        $getdate = date_create($mysqli->escape_string($_GET['date']));
+                        $date = date_format($getdate,"Y-m-d");
+                        $result = $mysqli->query("SELECT 
+                              rental.rental_startdate, 
+                              rental.rental_enddate, 
+                              rental.fee_to_provider, 
+                              house.house_name, 
+                              (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = house.user_id) as 'owner', 
+                              (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = reservation.user_id) as 'customer' 
+                              FROM reservation 
+                              JOIN rental 
+                              ON reservation.reservation_id = rental.reservation_id 
+                              JOIN house 
+                              ON reservation.house_id = house.house_id 
+                              JOIN users 
+                              ON reservation.user_id = users.user_id 
+                              WHERE rental_startdate = '$date' 
+                              AND rental_status ='completed'") or die ($mysqli->error());
+                    } else if(!empty($_GET['search'])){
+                        $string = $mysqli->escape_string($_GET['search']);
+                        $search = "'%".$string."%'";
+                        $result = $mysqli->query("SELECT 
+                      rental.rental_startdate, 
+                      rental.rental_enddate, 
+                      rental.fee_to_provider, 
+                      house.house_name, 
+                      (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = house.user_id) as 'owner', 
+                      (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = reservation.user_id) as 'customer' 
+                      FROM reservation 
+                      JOIN rental 
+                      ON reservation.reservation_id = rental.reservation_id 
+                      JOIN house 
+                      ON reservation.house_id = house.house_id 
+                      JOIN customers 
+                      ON reservation.user_id = customers.user_id 
+                      JOIN owners
+                      ON house.user_id = owners.user_id
+                      WHERE (owner LIKE $search OR customer LIKE $search OR house_name LIKE $search) 
+                      AND rental_status ='completed'") or die ($mysqli->error());
+                    } else {
+                        $result = $mysqli->query("SELECT 
+                      rental.rental_startdate, 
+                      rental.rental_enddate,
+                      rental.fee_to_provider, 
+                      house.house_name, 
+                      (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = house.user_id) as 'owner', 
+                      (SELECT CONCAT(given_name, ' ',last_name) FROM users WHERE user_id = reservation.user_id) as 'customer' 
+                      FROM reservation 
+                      JOIN rental 
+                      ON reservation.reservation_id = rental.reservation_id 
+                      JOIN house 
+                      ON reservation.house_id = house.house_id 
+                      JOIN users 
+                      ON reservation.user_id = users.user_id 
+                      WHERE rental_status ='completed'") or die ($mysqli->error());
+                    }
 					while($row = mysqli_fetch_array($result)) {
 						echo '<tr>
 							<td>'.$row['house_name'].'</td>
