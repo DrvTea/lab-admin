@@ -2,9 +2,9 @@
 	require_once './include/conn.php';
   session_start();
 	if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] !== true) {
-			header ('location: index.php');    
+			header ('location: ../index.php');    
 	} else if($_SESSION['user_type'] !== "admin") {
-			header ('location: index.php');
+			header ('location: ../index.php');
 	}
 ?>
 <!DOCTYPE html>
