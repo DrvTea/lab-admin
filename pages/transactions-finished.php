@@ -2,7 +2,7 @@
 	require_once './include/conn.php';
   session_start();
 	if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] !== true) {
-			header ('location: ../index.php');    
+			header ('location: ../index.php');
 	} else if($_SESSION['user_type'] !== "admin") {
 			header ('location: ../index.php');
 	}
@@ -209,7 +209,11 @@
                                       ON reservation.user_id = customers.user_id 
                                       JOIN owners
                                       ON house.user_id = owners.user_id
-                                      WHERE (owner LIKE $search OR customer LIKE $search OR house_name LIKE $search) 
+                                      WHERE (owner LIKE $search 
+                                              OR customer LIKE $search 
+                                              OR house_name LIKE $search 
+                                              OR rental_startdate LIKE $search 
+                                              OR rental_enddate LIKE $search) 
                                       AND rental_startdate = '$date' 
                                       AND rental_status ='completed'") or die ($mysqli->error());
                     } else if(!empty($_GET['date'])){
@@ -250,7 +254,11 @@
                       ON reservation.user_id = customers.user_id 
                       JOIN owners
                       ON house.user_id = owners.user_id
-                      WHERE (owner LIKE $search OR customer LIKE $search OR house_name LIKE $search) 
+                      WHERE (owner LIKE $search 
+                              OR customer LIKE $search 
+                              OR house_name LIKE $search 
+                              OR rental_startdate LIKE $search 
+                              OR rental_enddate LIKE $search) 
                       AND rental_status ='completed'") or die ($mysqli->error());
                     } else {
                         $result = $mysqli->query("SELECT 
